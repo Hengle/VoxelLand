@@ -1,0 +1,16 @@
+*.swp
+*.suo
+*.trx
+*.ncb
+*.log
+*.user
+*.vsmdi
+*.testrunconfig
+Output/
+bin/
+obj/
+Release/
+Debug/
+TestResults/
+Doxyout*
+doxygen_warnings.log

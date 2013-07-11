@@ -1,0 +1,17 @@
+﻿<Window x:Class="VoxelLand.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:gl="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF"
+        Title="MainWindow"
+        Height="350"
+        Width="525">
+    <Grid>
+        <gl:OpenGLControl
+            Name="glControl"
+            OpenGLDraw="gl_Draw"
+            OpenGLInitialized="gl_Initialized"
+            Resized="gl_Resized"
+            RenderContextType="FBO"
+            />
+    </Grid>
+</Window>
