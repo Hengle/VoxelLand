@@ -6,6 +6,10 @@ using System.Runtime.InteropServices;
 
 using SharpGL;
 using SharpGL.Enumerations;
+using SharpGL.SceneGraph.Shaders;
+using System.Reflection;
+using System.IO;
+using System.Collections.Generic;
 
 namespace VoxelLand
 {
@@ -14,6 +18,9 @@ namespace VoxelLand
         public MainWindow()
         {
             InitializeComponent();
+
+            frameTimes = new List<long>();
+            sw = Stopwatch.StartNew();
         }
 
         private void gl_Initialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
@@ -31,6 +38,7 @@ namespace VoxelLand
             Marshal.Copy(voxels, 0, voxelsMemory, voxels.Length);
 
             gl = this.glControl.OpenGL;
+            this.glControl.FrameRate = 60.0;
 
             gl.Enable(OpenGL.GL_DEPTH_TEST);
             gl.DepthFunc(DepthFunction.LessThanOrEqual);
@@ -50,125 +58,22 @@ namespace VoxelLand
             gl.EnableVertexAttribArray(0);
 
             var vert = gl.CreateShader(OpenGL.GL_VERTEX_SHADER);
-            gl.ShaderSource(vert, @"
-                #version 330
-
-                uniform mat4 modelViewMatrix;
-                uniform mat4 projectionMatrix;
-
-                in vec4 vertex;
-
-                out VoxelData
-                {
-                    vec4 color;
-                } v;
-
-                void main()
-                {
-                    gl_Position = projectionMatrix * modelViewMatrix * vertex;
-                    v.color = vec4(1.0, 1.0, 1.0, 1.0);
-                }");
+            gl.ShaderSource(vert, new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("VoxelLand.Shaders.Vertex.PassThrough.glsl")).ReadToEnd());
             gl.CompileShader(vert);
 
             var geo = gl.CreateShader(OpenGL.GL_GEOMETRY_SHADER);
-            gl.ShaderSource(geo, @"
-                #version 330
-
-                layout (points) in;
-                layout (triangle_strip, max_vertices=24) out;
-
-                uniform mat4 modelViewMatrix;
-                uniform mat4 projectionMatrix;
-
-                uniform vec4 corners[8] =
-                {
-                    vec4( 0.5,  0.5,  0.5, 1.0), // front, top,    right
-                    vec4(-0.5,  0.5,  0.5, 1.0), // front, top,    left
-                    vec4( 0.5, -0.5,  0.5, 1.0), // front, bottom, right
-                    vec4(-0.5, -0.5,  0.5, 1.0), // front, bottom, left
-                    vec4( 0.5,  0.5, -0.5, 1.0), // back,  top,    right
-                    vec4(-0.5,  0.5, -0.5, 1.0), // back,  top,    left
-                    vec4( 0.5, -0.5, -0.5, 1.0), // back,  bottom, right
-                    vec4(-0.5, -0.5, -0.5, 1.0), // back,  bottom, left
-                };
-
-                uniform int faces[24] =
-                {
-                    0, 1, 2, 3, // front
-                    7, 6, 3, 2, // bottom
-                    7, 5, 6, 4, // back
-                    4, 0, 6, 2, // right
-                    1, 0, 5, 4, // top
-                    3, 1, 7, 5  // left
-                };
-
-                uniform vec3 normals[6] =
-                {
-                    vec3( 0.0,  0.0,  1.0),
-                    vec3( 0.0, -1.0,  0.0),
-                    vec3( 0.0,  0.0,  1.0),
-                    vec3( 1.0,  0.0,  0.0),
-                    vec3( 0.0,  1.0,  0.0),
-                    vec3(-1.0,  0.0,  0.0),
-                };
-
-                in VoxelData
-                {
-                    vec4 color;
-                } vs[];
-
-                out FragmentData 
-                { 
-                    vec3 normal; 
-                    vec4 color; 
-                } frag; 
- 
-                void main(void) 
-                { 
-                    for (int f=0; f<6; f++) 
-                    { 
-                        for (int c=0; c<4; c++) 
-                        { 
-                            gl_Position = gl_in[0].gl_Position + (projectionMatrix * modelViewMatrix * corners[faces[f * 4 + c]]); 
-                            frag.color  = vs[0].color; 
-                            frag.normal = normals[f]; 
-                            EmitVertex(); 
-                        } 
-                        EndPrimitive(); 
-                    } 
-                } 
-                ");
+            gl.ShaderSource(geo, new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("VoxelLand.Shaders.Geometry.PointToVoxel.glsl")).ReadToEnd());
             gl.CompileShader(geo);
 
             var frag = gl.CreateShader(OpenGL.GL_FRAGMENT_SHADER);
-            gl.ShaderSource(frag, @"
-                #version 330
-
-                uniform float time;
-
-                in FragmentData
-                {
-                    vec3 normal;
-                    vec4 color;
-                } frag;
-
-                out vec4 color;
-
-                void main()
-                {
-                	// color = vec4(0.5 + (0.5 * sin(time)), 0.5 + (0.5 * cos(time)), 0.5 - (0.5 * cos(time)), 1.0);
-                	color = vec4(abs(frag.normal.x), abs(frag.normal.y), abs(frag.normal.z), 1);
-                }");
+            gl.ShaderSource(frag, new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("VoxelLand.Shaders.Fragment.ColorFromNormal.glsl")).ReadToEnd());
             gl.CompileShader(frag);
 
             prog = gl.CreateProgram();
-
             gl.AttachShader(prog, vert);
             gl.AttachShader(prog, geo);
             gl.AttachShader(prog, frag);
-
             gl.BindAttribLocation(prog, 0, "vertex");
-
             gl.LinkProgram(prog);
 
             time = gl.GetUniformLocation(prog, "time");
@@ -184,13 +89,26 @@ namespace VoxelLand
 
             gl.UseProgram(prog);
 
-            gl.Uniform1(time, sw.ElapsedMilliseconds / 1000.0f);
             gl.UniformMatrix4(modelView, 1, false, modelViewMatrix);
             gl.UniformMatrix4(projection, 1, false, projectionMatrix);
 
             gl.DrawArrays(OpenGL.GL_POINTS, 0, 5);
 
+            if (frameTimes.Count > 5)
+            {
+                long elapsed = frameTimes[frameTimes.Count-1] - frameTimes[0];
+                if (elapsed % 20 == 0)
+                {
+                    float fps = (frameTimes.Count * Stopwatch.Frequency) / (float)elapsed;
+                    Debug.WriteLine(String.Format("FPS: {0:F2}", fps));
+                }
+            }
+
             gl.Flush();
+
+            frameTimes.Add(sw.ElapsedTicks);
+            if (frameTimes.Count > 100)
+                frameTimes.RemoveAt(0);
         }
 
         private void gl_Resized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
@@ -210,6 +128,7 @@ namespace VoxelLand
         private uint prog;
         private Matrix projectionMatrix;
         private Matrix modelViewMatrix;
-        private Stopwatch sw = Stopwatch.StartNew();
+        private Stopwatch sw;
+        private List<long> frameTimes;
     }
 }

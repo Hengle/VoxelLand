@@ -88,6 +88,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Shaders\Fragment\ColorFromNormal.glsl" />
+    <EmbeddedResource Include="Shaders\Geometry\PointToVoxel.glsl" />
+    <EmbeddedResource Include="Shaders\Vertex\PassThrough.glsl" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
