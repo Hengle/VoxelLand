@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelLand", "VoxelLand.csproj", "{64F16F5D-7180-4B34-9234-6B85336500B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelLand", "VoxelLand\VoxelLand.csproj", "{1262807D-214C-4ED9-9922-BE2EF709E084}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelLibrary", "..\VoxelLibrary\VoxelLibrary.csproj", "{FD3BB2A4-B3D1-4F46-999A-5CBE049BDD14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelLibrary", "VoxelLibrary\VoxelLibrary.csproj", "{FD3BB2A4-B3D1-4F46-999A-5CBE049BDD14}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9F08FDC2-6EFA-44C9-8CB3-1EE1A5674AB5}"
 	ProjectSection(SolutionItems) = preProject
@@ -12,9 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		VoxelLand.vsmdi = VoxelLand.vsmdi
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelTests", "..\VoxelTests\VoxelTests.csproj", "{C07711A1-781A-4522-92BF-68CB269F230B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelLand2", "..\VoxelLand2\VoxelLand2.csproj", "{1262807D-214C-4ED9-9922-BE2EF709E084}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelTests", "VoxelTests\VoxelTests.csproj", "{C07711A1-781A-4522-92BF-68CB269F230B}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -29,16 +27,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Debug|x86.ActiveCfg = Debug|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Debug|x86.Build.0 = Debug|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Release|Any CPU.ActiveCfg = Release|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Release|Mixed Platforms.Build.0 = Release|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Release|x86.ActiveCfg = Release|x86
-		{64F16F5D-7180-4B34-9234-6B85336500B8}.Release|x86.Build.0 = Release|x86
 		{FD3BB2A4-B3D1-4F46-999A-5CBE049BDD14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD3BB2A4-B3D1-4F46-999A-5CBE049BDD14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD3BB2A4-B3D1-4F46-999A-5CBE049BDD14}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
