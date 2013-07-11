@@ -56,6 +56,30 @@ namespace VoxelLand
             return m.m;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (! (obj is Matrix))
+                return false;
+
+            Matrix other = (Matrix)obj;
+
+            for (int i=0; i<16; i++)
+                if (this.m[i] != other.m[i])
+                    return false;
+
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return String.Format(
+                @"|{0:F3}|{4:F3}|{8:F3}|{12:F3}|\n|{1:F3}|{5:F3}|{9:F3}|{13:F3}|\n|{2:F3}|{6:F3}|{10:F3}|{14:F3}|\n|{3:F3}|{7:F3}|{11:F3}|{15:F3}|",
+                m[ 0], m[ 1], m[ 2], m[ 3],
+                m[ 4], m[ 5], m[ 6], m[ 7],
+                m[ 8], m[ 9], m[10], m[11],
+                m[12], m[13], m[14], m[15]);
+        }
+
         public static Matrix operator*(Matrix m, float s)
         {
             return new Matrix(new float[]

@@ -27,6 +27,25 @@ namespace VoxelLand
             return v.v;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (! (obj is Vector))
+                return false;
+
+            Vector other = (Vector)obj;
+
+            for (int i=0; i<4; i++)
+                if (this.v[i] != other.v[i])
+                    return false;
+
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("<{0:F3}, {1:F3}, {2:F3}>", X, Y, Z);
+        }
+
         public float this[int component]
         {
             get { return v[component]; }
@@ -66,7 +85,7 @@ namespace VoxelLand
             return new Vector(
                 u.Y*v.Z-u.Z*v.Y,
                 u.Z*v.X-u.X*v.Z,
-                u.X*v.Z-u.Z*v.X
+                u.X*v.Y-u.Y*v.X
             );
         }
 

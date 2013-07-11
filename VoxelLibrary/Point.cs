@@ -29,6 +29,25 @@ namespace VoxelLand
             return p.p;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (! (obj is Point))
+                return false;
+
+            Point other = (Point)obj;
+
+            for (int i=0; i<4; i++)
+                if (this.p[i] != other.p[i])
+                    return false;
+
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("({0:F3}, {1:F3}, {2:F3})", X, Y, Z);
+        }
+
         public float this[int component]
         {
             get { return p[component]; }
