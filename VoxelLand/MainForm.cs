@@ -22,24 +22,29 @@ namespace VoxelLand
         {
             InitializeComponent();
 
-            mainLoopThread = new Thread(mainLoop) { IsBackground = true };
             sw = Stopwatch.StartNew();
             frameTimes = new List<long>();
             n = 0;
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+
+            mainLoopThread = new Thread(mainLoop) { IsBackground = true };
+            mainLoopThread.Start();
         }
 
         private void mainLoop(object ignore)
         {
             while (true)
             {
-                BeginInvoke((Action)(() => 
-                    {
-                        glControl_OpenGLDraw(null, null);
-                    }));
+                BeginInvoke((Action)Redraw);
+                Thread.Sleep(1);
             }
         }
 
-        private void glControl_OpenGLDraw(object sender, SharpGL.RenderEventArgs args)
+        private void Redraw()
         {
             modelViewMatrix = Transform.Translate(0.0f, 0.0f, -5.0f);
 
@@ -65,6 +70,8 @@ namespace VoxelLand
             if (frameTimes.Count > 100)
                 frameTimes.RemoveAt(0);
         }
+
+        private void glControl_OpenGLDraw(object sender, SharpGL.RenderEventArgs args) { }
 
         private void glControl_OpenGLInitialized(object sender, EventArgs e)
         {
@@ -121,8 +128,6 @@ namespace VoxelLand
 
             modelView = gl.GetUniformLocation(prog, "modelViewMatrix");
             projection = gl.GetUniformLocation(prog, "projectionMatrix");
-
-            mainLoopThread.Start();
         }
 
         private void glControl_SizeChanged(object sender, EventArgs e)
