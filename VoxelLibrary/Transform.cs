@@ -18,6 +18,11 @@ namespace VoxelLand
             });
         }
 
+        public static Matrix Scale(Vector v)
+        {
+            return Scale(v.X, v.Y, v.Z);
+        }
+
         public static Matrix Translate(float dx, float dy, float dz)
         {
             return new Matrix(new float[]
@@ -27,6 +32,11 @@ namespace VoxelLand
                 0,  0,  1,  0,
                 dx, dy, dz, 1
             });
+        }
+
+        public static Matrix Translate(Vector v)
+        {
+            return Translate(v.X, v.Y, v.Z);
         }
 
         public static Matrix Rotate(float angle, float x, float y, float z)
@@ -41,6 +51,11 @@ namespace VoxelLand
                 x*z*(1-c)+y*s, y*z*(1-c)-x*s, z*z*(1-c)+c,   0,
                 0,             0,             0,             1
             });
+        }
+
+        public static Matrix Rotate(float angle, Vector axis)
+        {
+            return Rotate(angle, axis.X, axis.Y, axis.Z);
         }
         
         public static Matrix Frustum(float left, float right, float bottom, float top, float near, float far)

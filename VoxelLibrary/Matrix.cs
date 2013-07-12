@@ -73,11 +73,22 @@ namespace VoxelLand
         public override string ToString()
         {
             return String.Format(
-                @"|{0:F3}|{4:F3}|{8:F3}|{12:F3}|\n|{1:F3}|{5:F3}|{9:F3}|{13:F3}|\n|{2:F3}|{6:F3}|{10:F3}|{14:F3}|\n|{3:F3}|{7:F3}|{11:F3}|{15:F3}|",
+                "|{0:F3}|{4:F3}|{8:F3}|{12:F3}|\n|{1:F3}|{5:F3}|{9:F3}|{13:F3}|\n|{2:F3}|{6:F3}|{10:F3}|{14:F3}|\n|{3:F3}|{7:F3}|{11:F3}|{15:F3}|",
                 m[ 0], m[ 1], m[ 2], m[ 3],
                 m[ 4], m[ 5], m[ 6], m[ 7],
                 m[ 8], m[ 9], m[10], m[11],
                 m[12], m[13], m[14], m[15]);
+        }
+
+        public Matrix Transposed()
+        {
+            return new Matrix(new float[]
+                {
+                    m[0], m[4], m[ 8], m[12],
+                    m[1], m[5], m[ 9], m[13],
+                    m[2], m[6], m[10], m[14],
+                    m[3], m[7], m[11], m[15]
+                });
         }
 
         public static Matrix operator*(Matrix m, float s)
@@ -159,15 +170,6 @@ namespace VoxelLand
             );
         }
 
-        public static Vector operator*(Vector v, Matrix m)
-        {
-            return new Vector(
-                m[0,0]*v.X + m[1,0]*v.Y + m[2,0]*v.Z,
-                m[0,1]*v.X + m[1,1]*v.Y + m[2,1]*v.Z,
-                m[0,2]*v.X + m[1,2]*v.Y + m[2,2]*v.Z
-            );
-        }
-
         public static Point operator*(Matrix m, Point p)
         {
             return new Point(
@@ -175,16 +177,6 @@ namespace VoxelLand
                 m[1,0]*p.X + m[1,1]*p.Y + m[1,2]*p.Z + m[1,3],
                 m[2,0]*p.X + m[2,1]*p.Y + m[2,2]*p.Z + m[2,3],
                 m[3,0]*p.X + m[3,1]*p.Y + m[3,2]*p.Z + m[3,3]
-            );
-        }
-
-        public static Point operator*(Point p, Matrix m)
-        {
-            return new Point(
-                m[0,0]*p.X + m[1,0]*p.Y + m[2,0]*p.Z + m[3,0],
-                m[0,1]*p.X + m[1,1]*p.Y + m[2,1]*p.Z + m[3,1],
-                m[0,2]*p.X + m[1,2]*p.Y + m[2,2]*p.Z + m[3,2],
-                m[0,3]*p.X + m[1,3]*p.Y + m[2,3]*p.Z + m[3,3]
             );
         }
 

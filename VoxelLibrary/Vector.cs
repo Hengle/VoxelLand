@@ -89,7 +89,7 @@ namespace VoxelLand
             );
         }
 
-        public Vector Normalize()
+        public Vector Normalized()
         {
             return this / Length;
         }

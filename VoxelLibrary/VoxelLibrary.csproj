@@ -43,6 +43,7 @@
     <Compile Include="..\Metadata\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="CoordinateSystem.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
