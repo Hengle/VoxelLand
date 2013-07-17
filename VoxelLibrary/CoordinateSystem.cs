@@ -41,6 +41,11 @@ namespace VoxelLand
             return rotation.Equals(other.rotation) && translation.Equals(other.translation);
         }
 
+        public Matrix ModelViewMatrix
+        {
+            get { return rotation * Transform.Translate(translation); }
+        }
+
         public Vector ToGlobal(Vector v)
         {
             return rotation * v;

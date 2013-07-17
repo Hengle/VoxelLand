@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using SharpGL;
-using System.IO;
 using SharpGL.Enumerations;
-using System.Runtime.InteropServices;
-using System.Reflection;
-using System.Diagnostics;
-using System.Threading;
 
 namespace VoxelLand
 {
@@ -22,9 +15,11 @@ namespace VoxelLand
         {
             InitializeComponent();
 
-            sw = Stopwatch.StartNew();
-            frameTimes = new List<long>();
-            n = 0;
+            camera = new PerspectiveCamera();
+            camera.LocalTranslate(new Vector(0, 0, -3));
+
+            // camera = new OrthographicCamera(2);
+            // camera.LocalTranslate(new Vector(0, 0, -1));
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -46,29 +41,18 @@ namespace VoxelLand
 
         private void Redraw()
         {
-            modelViewMatrix = Transform.Translate(0.0f, 0.0f, -5.0f);
+            gl.Viewport(viewport.Left, viewport.Top, viewport.Width, viewport.Height);
 
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
             gl.UseProgram(prog);
 
-            gl.UniformMatrix4(modelView, 1, false, modelViewMatrix);
-            gl.UniformMatrix4(projection, 1, false, projectionMatrix);
+            gl.UniformMatrix4(modelView, 1, false, camera.ModelViewMatrix);
+            gl.UniformMatrix4(projection, 1, false, camera.GetProjectionMatrix(viewport));
 
             gl.DrawArrays(OpenGL.GL_POINTS, 0, 5);
 
-            if (frameTimes.Count > 5 && (n++ % 200) == 0)
-            {
-                long elapsed = frameTimes[frameTimes.Count-1] - frameTimes[0];
-                float fps = (frameTimes.Count * Stopwatch.Frequency) / (float)elapsed;
-                Debug.WriteLine(String.Format("FPS: {0:F2}", fps));
-            }
-
             gl.Flush();
-
-            frameTimes.Add(sw.ElapsedTicks);
-            if (frameTimes.Count > 100)
-                frameTimes.RemoveAt(0);
         }
 
         private void glControl_OpenGLDraw(object sender, SharpGL.RenderEventArgs args) { }
@@ -132,23 +116,15 @@ namespace VoxelLand
 
         private void glControl_SizeChanged(object sender, EventArgs e)
         {
-            int w = (int)glControl.Width;
-            int h = (int)glControl.Height;
-
-            gl.Viewport(0, 0, w, h);
-
-            projectionMatrix = Transform.Perspective((float)(Math.PI / 4), w/(float)h, 0.1f, 100.0f);
+            viewport = new Viewport(0, 0, glControl.Width, glControl.Height);
         }
 
         private OpenGL gl;
         private int modelView;
         private int projection;
         private uint prog;
-        private Matrix projectionMatrix;
-        private Matrix modelViewMatrix;
-        private Stopwatch sw;
-        private List<long> frameTimes;
-        private int n;
         private Thread mainLoopThread;
+        private Camera camera;
+        private Viewport viewport;
     }
 }
