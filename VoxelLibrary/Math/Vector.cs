@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace VoxelLand
 {
-    public class Vector
+    public struct Vector
     {
         public static Vector Zero  { get { return new Vector(0, 0, 0); } }
         public static Vector UnitX { get { return new Vector(1, 0, 0); } }
         public static Vector UnitY { get { return new Vector(0, 1, 0); } }
         public static Vector UnitZ { get { return new Vector(0, 0, 1); } }
-
-        public Vector()
-        {
-            v = new float[] { 0, 0, 0, 0 };
-        }
 
         public Vector(float x, float y, float z)
         {
@@ -110,6 +106,7 @@ namespace VoxelLand
             }
         }
 
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType=UnmanagedType.R4, SizeConst=4)]
         private float[] v;
     }
 }

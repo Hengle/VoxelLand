@@ -38,9 +38,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl.AutoSize = true;
+            this.glControl.DrawFPS = false;
+            this.glControl.FrameRate = 60;
             this.glControl.Location = new System.Drawing.Point(0, 0);
             this.glControl.Name = "glControl";
-            this.glControl.FrameRate = 60;
             this.glControl.RenderContextType = SharpGL.RenderContextType.NativeWindow;
             this.glControl.RenderTrigger = SharpGL.RenderTrigger.Manual;
             this.glControl.Size = new System.Drawing.Size(800, 600);

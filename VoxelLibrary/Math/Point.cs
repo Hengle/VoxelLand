@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace VoxelLand
 {
-    public class Point
+    public struct Point
     {
         public static Point Origin { get { return new Point(0, 0, 0); } }
-
-        public Point()
-        {
-            p = new float[] { 0, 0, 0, 0 };
-        }
 
         public Point(float x, float y, float z)
         {
@@ -72,6 +68,7 @@ namespace VoxelLand
             return new Point(p.X-v.X, p.Y-v.Y, p.Z-v.Z);
         }
 
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType=UnmanagedType.R4, SizeConst=4)]
         private float[] p;
     }
 }

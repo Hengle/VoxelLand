@@ -38,17 +38,8 @@
     <Reference Include="SharpGL">
       <HintPath>..\Dependencies\SharpGL.dll</HintPath>
     </Reference>
-    <Reference Include="SharpGL.SceneGraph">
-      <HintPath>..\Dependencies\SharpGL.SceneGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpGL.Serialization">
-      <HintPath>..\Dependencies\SharpGL.Serialization.dll</HintPath>
-    </Reference>
     <Reference Include="SharpGL.WinForms">
       <HintPath>..\Dependencies\SharpGL.WinForms.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpGL.WPF">
-      <HintPath>..\Dependencies\SharpGL.WPF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -93,9 +84,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Shaders\Fragment\ColorFromNormal.glsl" />
-    <EmbeddedResource Include="Shaders\Geometry\PointToVoxel.glsl" />
-    <EmbeddedResource Include="Shaders\Vertex\PassThrough.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VoxelLibrary\VoxelLibrary.csproj">

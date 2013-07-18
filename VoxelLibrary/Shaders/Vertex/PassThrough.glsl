@@ -3,7 +3,7 @@
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 
-in vec4 vertex;
+layout(location = 0) in vec4 vertex;
 
 out VoxelData
 {

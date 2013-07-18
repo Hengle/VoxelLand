@@ -10,21 +10,28 @@ namespace VoxelLand
         public Entity(Entity parent=null, CoordinateSystem coordinateSystem=null, string name="")
         {
             this.id = NextID++;
-            this.parent = parent;
+            this.Parent = parent;
             this.coordinateSystem = coordinateSystem ?? CoordinateSystem.Default;
-            this.Name = name ?? String.Format("Entity #{0}", id);
+            this.Name = name.Length > 0 ? name : String.Format("Entity #{0}", id);
         }
 
         public string Name { get; set; }
+
+        public Entity Parent { get; private set; }
+
+        public void ResetLocation()
+        {
+            coordinateSystem = CoordinateSystem.Default;
+        }
 
         public Matrix ModelViewMatrix
         {
             get
             {
-                if (parent == null)
+                if (Parent == null)
                     return coordinateSystem.ModelViewMatrix;
                 else
-                    return coordinateSystem.ModelViewMatrix * parent.ModelViewMatrix;
+                    return coordinateSystem.ModelViewMatrix * Parent.ModelViewMatrix;
             }
         }
 
@@ -53,7 +60,6 @@ namespace VoxelLand
             return String.Format("#<Entity {0}>", Name);
         }
 
-        protected Entity parent;
         protected CoordinateSystem coordinateSystem;
         protected long id;
 

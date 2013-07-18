@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace VoxelLand
 {
-    public class Matrix
+    public struct Matrix
     {
         public static Matrix Zero
         {
@@ -33,11 +34,6 @@ namespace VoxelLand
                     0, 0, 0, 1
                 });
             }
-        }
-
-        public Matrix()
-        {
-            m = new float[16];
         }
 
         public Matrix(float[] m)
@@ -180,6 +176,7 @@ namespace VoxelLand
             );
         }
 
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType=UnmanagedType.R4, SizeConst=16)]
         private float[] m;
     }
 }

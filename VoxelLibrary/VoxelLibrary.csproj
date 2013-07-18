@@ -31,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SharpGL">
+      <HintPath>..\Dependencies\SharpGL.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.WinForms">
+      <HintPath>..\Dependencies\SharpGL.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,15 +49,32 @@
     <Compile Include="..\Metadata\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
-    <Compile Include="CoordinateSystem.cs" />
+    <Compile Include="Buffer.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Mesh.cs" />
+    <Compile Include="MaterialManager.cs" />
+    <Compile Include="Material.cs" />
+    <Compile Include="Shader.cs" />
+    <Compile Include="ShaderManager.cs" />
+    <Compile Include="Math\CoordinateSystem.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Renderer.cs" />
     <Compile Include="Viewport.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="Matrix.cs" />
-    <Compile Include="Point.cs" />
+    <Compile Include="Math\Matrix.cs" />
+    <Compile Include="Math\Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Transform.cs" />
-    <Compile Include="Vector.cs" />
+    <Compile Include="Math\Transform.cs" />
+    <Compile Include="Math\Vector.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Shaders\Fragment\ColorFromNormal.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Shaders\Geometry\PointToVoxel.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Shaders\Vertex\PassThrough.glsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
