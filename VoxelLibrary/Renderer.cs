@@ -68,7 +68,8 @@ namespace VoxelLand
             gl.BindVertexArray(mesh.ID);
 
             gl.UseProgram(material.ID);
-            material.SetUniform("modelViewMatrix", camera.ModelViewMatrix);
+            
+            material.SetUniform("modelViewMatrix", camera.CoordinateSystem.ViewMatrix);
             material.SetUniform("projectionMatrix", camera.GetProjectionMatrix(viewport));
 
             gl.DrawArrays(OpenGL.GL_POINTS, 0, 5);

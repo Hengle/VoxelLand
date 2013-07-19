@@ -9,27 +9,17 @@ namespace VoxelLand
     {
         public static CoordinateSystem Default
         {
-            get { return new CoordinateSystem(Point.Origin, Vector.UnitX, Vector.UnitY, Vector.UnitZ); }
+            get { return new CoordinateSystem(); }
         }
 
         public CoordinateSystem()
         {
-            rotation = Matrix.Identity;
-            translation = Vector.Zero;
+            Rotation = Quaternion.Identity;
+            Origin = Point.Origin;
         }
 
-        public CoordinateSystem(Point origin, Vector xAxis, Vector yAxis, Vector zAxis)
-        {
-            rotation = new Matrix(new float[]
-                {
-                    xAxis.X,  xAxis.Y,  xAxis.Z,  0,
-                    yAxis.X,  yAxis.Y,  yAxis.Z,  0,
-                    zAxis.X,  zAxis.Y,  zAxis.Z,  0,
-                    0,        0,        0,        1
-                });
-
-            translation = origin - Point.Origin;
-        }
+        public Quaternion Rotation { get; set; }
+        public Point      Origin   { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -38,71 +28,104 @@ namespace VoxelLand
 
             CoordinateSystem other = (CoordinateSystem)obj;
 
-            return rotation.Equals(other.rotation) && translation.Equals(other.translation);
-        }
-
-        public Matrix ModelViewMatrix
-        {
-            get { return rotation * Transform.Translate(translation); }
-        }
-
-        public Vector ToGlobal(Vector v)
-        {
-            return rotation * v;
-        }
-
-        public Point ToGlobal(Point p)
-        {
-            return (rotation * p) + translation;
-        }
-
-        public CoordinateSystem ToGlobal(CoordinateSystem c)
-        {
-            return null;
-        }
-
-        public Vector ToLocal(Vector v)
-        {
-            return rotation.Transposed() * v;
-        }
-
-        public Point ToLocal(Point p)
-        {
-            return rotation.Transposed() * (p - translation);
-        }
-
-        public CoordinateSystem LocallyTranslated(Vector v)
-        {
-            return new CoordinateSystem(rotation, translation + ToGlobal(v));
-        }
-
-        public CoordinateSystem GloballyTranslated(Vector v)
-        {
-            return new CoordinateSystem(rotation, translation + v);
-        }
-
-        public CoordinateSystem LocallyRotated(float angle, Vector axis)
-        {
-            return new CoordinateSystem(Transform.Rotate(angle, axis) * rotation, translation);
-        }
-
-        public CoordinateSystem GloballyRotated(float angle, Vector axis)
-        {
-            return new CoordinateSystem(Transform.Rotate(angle, ToLocal(axis)) * rotation, Transform.Rotate(angle, axis) * translation);
+            return Rotation.Equals(other.Rotation) && Origin.Equals(other.Origin);
         }
 
         public override string ToString()
         {
-            return String.Format("{0} + {1}", rotation, translation);
+            return String.Format("{0} + {1}", Rotation, Origin);
         }
 
-        private CoordinateSystem(Matrix rotation, Vector translation)
+        #region Matrix Conversions
+        public Matrix ModelMatrix
         {
-            this.rotation = rotation;
-            this.translation = translation;
+            get { return Transform.Translate(Origin - Point.Origin) * Rotation; }
         }
 
-        Matrix rotation;
-        Vector translation;
+        public Matrix ViewMatrix
+        {
+            get { return Rotation.Conjugate() * Transform.Translate(Point.Origin - Origin); }
+        }
+        #endregion
+
+        #region Move Between Coordinate System
+        public Vector ToGlobal(Vector v)
+        {
+            return Rotation * v;
+        }
+
+        public Vector ToLocal(Vector v)
+        {
+            return Rotation.Conjugate() * v;
+        }
+
+        public Point ToGlobal(Point p)
+        {
+            return Origin + (Rotation * (p - Point.Origin));
+        }
+
+        public Point ToLocal(Point p)
+        {
+            return Point.Origin + (Rotation.Conjugate() * (p - Origin));
+        }
+
+        public CoordinateSystem ToGlobal(CoordinateSystem c)
+        {
+            return new CoordinateSystem(Rotation * c.Rotation, ToGlobal(c.Origin));
+        }
+
+        public CoordinateSystem ToLocal(CoordinateSystem c)
+        {
+            return new CoordinateSystem(c.Rotation * Rotation.Conjugate(), ToLocal(c.Origin));
+        }
+        #endregion
+
+        #region Transformations
+        public CoordinateSystem LocallyTranslated(Vector v)
+        {
+            return new CoordinateSystem(Rotation, Origin + (Rotation * v));
+        }
+
+        public CoordinateSystem GloballyTranslated(Vector v)
+        {
+            return new CoordinateSystem(Rotation, Origin + v);
+        }
+
+        public CoordinateSystem LocallyRotated(float angle, Vector axis)
+        {
+            return LocallyRotated(Transform.RotateQ(angle, axis));
+        }
+
+        public CoordinateSystem LocallyRotated(float pitch, float yaw, float roll)
+        {
+            return LocallyRotated(Transform.Rotate(pitch, yaw, roll));
+        }
+
+        public CoordinateSystem GloballyRotated(float angle, Vector axis)
+        {
+            return GloballyRotated(Transform.RotateQ(angle, axis));
+        }
+
+        public CoordinateSystem GloballyRotated(float pitch, float yaw, float roll)
+        {
+            return GloballyRotated(Transform.Rotate(pitch, yaw, roll));
+        }
+
+        private CoordinateSystem LocallyRotated(Quaternion newRotation)
+        {
+            return new CoordinateSystem(Rotation * newRotation, Origin);
+        }
+
+        private CoordinateSystem GloballyRotated(Quaternion newRotation)
+        {
+            return new CoordinateSystem(newRotation * Rotation, newRotation * Origin);
+        }
+        #endregion
+
+        private CoordinateSystem(Quaternion rotation, Point origin)
+        {
+            Rotation = rotation;
+            Origin = origin;
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace VoxelLand
             renderer.Initialize(handle, viewport);
 
             camera = new PerspectiveCamera();
-            camera.LocalTranslate(new Vector(0, 0, -3));
+            camera.LocalTranslate(new Vector(0, 0, 3));
 
             // camera = new OrthographicCamera(2);
             // camera.LocalTranslate(new Vector(0, 0, -1));
@@ -73,7 +73,7 @@ namespace VoxelLand
                 camera.LocalRotate(-mouseAccum.Y / 200.0f, Vector.UnitX);
 
             if (mouseAccum.X != 0.0f)
-                camera.LocalRotate(mouseAccum.X / 200.0f, camera.CoordinateSystem.ToGlobal(Vector.UnitY));
+                camera.LocalRotate(mouseAccum.X / 200.0f, camera.CoordinateSystem.ToLocal(Vector.UnitY));
 
             mouseAccum.X = mouseAccum.Y = 0;
         }

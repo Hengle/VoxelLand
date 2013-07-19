@@ -7,10 +7,9 @@ namespace VoxelLand
 {
     public abstract class Entity
     {
-        public Entity(Entity parent=null, CoordinateSystem coordinateSystem=null, string name="")
+        public Entity(CoordinateSystem coordinateSystem=null, string name="")
         {
             ID = NextID++;
-            Parent = parent;
             CoordinateSystem = coordinateSystem ?? CoordinateSystem.Default;
             Name = name.Length > 0 ? name : String.Format("Entity #{0}", ID);
         }
@@ -19,24 +18,11 @@ namespace VoxelLand
 
         public string Name { get; set; }
 
-        public Entity Parent { get; private set; }
-
         public CoordinateSystem CoordinateSystem { get; private set; }
 
         public void ResetLocation()
         {
             CoordinateSystem = CoordinateSystem.Default;
-        }
-
-        public Matrix ModelViewMatrix
-        {
-            get
-            {
-                if (Parent == null)
-                    return CoordinateSystem.ModelViewMatrix;
-                else
-                    return CoordinateSystem.ModelViewMatrix * Parent.ModelViewMatrix;
-            }
         }
 
         public void LocalTranslate(Vector v)
@@ -57,6 +43,16 @@ namespace VoxelLand
         public void GlobalRotate(float angle, Vector axis)
         {
             CoordinateSystem = CoordinateSystem.GloballyRotated(angle, axis);
+        }
+
+        public void LocalRotate(float pitch, float yaw, float roll)
+        {
+            CoordinateSystem = CoordinateSystem.LocallyRotated(pitch, yaw, roll);
+        }
+
+        public void GlobalRotate(float pitch, float yaw, float roll)
+        {
+            CoordinateSystem = CoordinateSystem.GloballyRotated(pitch, yaw, roll);
         }
 
         public override string ToString()

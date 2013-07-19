@@ -7,10 +7,9 @@ namespace VoxelLand
 {
     public abstract class Camera : Entity
     {
-        public Camera(Entity parent=null, CoordinateSystem coordinateSystem=null, string name="")
-            : base(parent, coordinateSystem)
+        public Camera(CoordinateSystem coordinateSystem=null, string name="")
+            : base(coordinateSystem, name)
         {
-            this.Name = name ?? String.Format("Camera #{0}", ID);
         }
 
         public abstract Matrix GetProjectionMatrix(Viewport viewport);

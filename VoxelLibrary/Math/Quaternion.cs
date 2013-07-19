@@ -8,6 +8,11 @@ namespace VoxelLand
 {
     public struct Quaternion
     {
+        public static Quaternion Identity
+        {
+            get { return new Quaternion(0, 0, 0, 1); }
+        }
+
         public Quaternion(float x, float y, float z, float w)
         {
             q = new float[] { x, y, z, w };
@@ -64,7 +69,7 @@ namespace VoxelLand
 
         public float MagnitudeSquared
         {
-            get { return X*X + Y+Y + Z*Z + W*W; }
+            get { return X*X + Y*Y + Z*Z + W*W; }
         }
 
         public Quaternion Conjugate()
@@ -83,9 +88,16 @@ namespace VoxelLand
 
         public static Vector operator*(Quaternion q, Vector v)
         {
-            Vector vn = v.Normalized();
-            var r = q * (new Quaternion(vn.X, vn.Y, vn.Z, 0.0f) * q.Conjugate());
-            return new Vector(r.X, r.Y, r.Z);
+            float len = v.Length;
+            if (len == 0.0f) return v;
+            v /= len;
+            var r = q * (new Quaternion(v.X, v.Y, v.Z, 0.0f) * q.Conjugate());
+            return new Vector(r.X, r.Y, r.Z) * len;
+        }
+
+        public static Point operator*(Quaternion q, Point p)
+        {
+            return Point.Origin + q * (p - Point.Origin);
         }
 
         public override string ToString()
