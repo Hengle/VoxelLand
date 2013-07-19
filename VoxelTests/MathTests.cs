@@ -68,25 +68,24 @@ namespace VoxelTests
         [TestMethod]
         public void TestTransform()
         {
-            Assert.AreEqual(Transform.Translate(1, 2, 3) * new Point(2, 2, 2), new Point(3, 4, 5));
-            Assert.AreEqual(Transform.Scale(1, 2, 3) * new Point(2, 2, 2), new Point(2, 4, 6));
+            Assert.AreEqual(Transform.Translate(new Vector(1, 2, 3)) * new Point(2, 2, 2), new Point(3, 4, 5));
+            Assert.AreEqual(Transform.Scale(new Vector(1, 2, 3)) * new Point(2, 2, 2), new Point(2, 4, 6));
             
-            AssertVectorsAreEqual(Transform.Rotate((float)Math.PI/2.0f, 0, 0, 1) * Vector.UnitX, Vector.UnitY);
+            AssertVectorsAreEqual(Transform.Rotate((float)Math.PI/2.0f, Vector.UnitZ) * Vector.UnitX, Vector.UnitY);
         }
 
         [TestMethod]
         public void TestDefaultCoordinateSystem()
         {
-            var c = CoordinateSystem.Default.GloballyTranslated(new Vector(1, 2, 3));
-            AssertPointsAreEqual(c.ToLocal(Point.Origin), new Point(-1, -2, -3));
-            AssertPointsAreEqual(c.ToGlobal(Point.Origin), new Point(1, 2, 3));
+            var c = CoordinateSystem.Default;
+            AssertPointsAreEqual(c.ToLocal(Point.Origin), Point.Origin);
+            AssertPointsAreEqual(c.ToGlobal(Point.Origin), Point.Origin);
         }
 
         [TestMethod]
         public void TestTranslatedCoordinateSystem()
         {
             var c = CoordinateSystem.Default.GloballyTranslated(new Vector(1, 2, 3));
-
             AssertPointsAreEqual(c.ToLocal(Point.Origin), new Point(-1, -2, -3));
             AssertPointsAreEqual(c.ToGlobal(Point.Origin), new Point(1, 2, 3));
         }
@@ -98,6 +97,9 @@ namespace VoxelTests
             AssertPointsAreEqual(c.ToLocal(new Point(0, 0, -1)), new Point(0, 0, 1));
             AssertPointsAreEqual(c.ToLocal(new Point(0, 1, 0)), new Point(0, -1, 0));
             AssertPointsAreEqual(c.ToLocal(new Point(1, 0, 0)), new Point(1, 0, 0));
+            AssertPointsAreEqual(new Point(0, 0, -1), c.ToGlobal(new Point(0, 0, 1)));
+            AssertPointsAreEqual(new Point(0, 1, 0),  c.ToGlobal(new Point(0, -1, 0)));
+            AssertPointsAreEqual(new Point(1, 0, 0),  c.ToGlobal(new Point(1, 0, 0)));
         }
 
         [TestMethod]

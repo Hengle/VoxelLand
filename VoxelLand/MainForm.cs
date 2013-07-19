@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Threading;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace VoxelLand
 {
@@ -9,84 +7,83 @@ namespace VoxelLand
     {
         public MainForm()
         {
+            game = new Game();
+            foreground = false;
+
             InitializeComponent();
+
+            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            SetStyle(ControlStyles.UserPaint, true);
 
             // FormBorderStyle = FormBorderStyle.None;
             // WindowState = FormWindowState.Maximized;
         }
 
-        private void glControl_OpenGLDraw(object sender, SharpGL.RenderEventArgs args)
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+
+            game.Initialize(Handle, new Viewport(0, 0, Width, Height));
+            game.Start();
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs e)
         {
         }
 
-        private void glControl_OpenGLInitialized(object sender, EventArgs e)
+        protected override void OnSizeChanged(EventArgs e)
         {
+            game.OnViewportChanged(new Viewport(0, 0, Width, Height));
+            base.OnSizeChanged(e);
         }
 
         protected override void OnActivated(EventArgs e)
         {
-            Debug.WriteLine("Activated");
+            int cx = Left + Width / 2;
+            int cy = Top + Height / 2;
+            Cursor.Position = new System.Drawing.Point(cx, cy);
 
-            // foreground = true;
-            // Capture = true;
-            // Cursor.Hide();
+            foreground = true;
+            Capture = true;
+            Cursor.Hide();
 
-            if (game != null)
-                game.Resume();
+            game.Resume();
 
             base.OnActivated(e);
         }
 
         protected override void OnDeactivate(EventArgs e)
         {
-            if (game != null)
-                game.Pause();
+            game.Pause();
 
-            // foreground = false;
-            // Capture = false;
-            // Cursor.Show();
+            foreground = false;
+            Capture = false;
+            Cursor.Show();
 
             base.OnDeactivate(e);
         }
 
-        // protected override void OnMouseMove(MouseEventArgs e)
-        // {
-        //     int cx = Left + Width / 2;
-        //     int cy = Top + Height / 2;
-
-        //     if (Cursor.Position.X != cx || Cursor.Position.Y != cy)
-        //     {
-        //         game.OnMouseMove(Cursor.Position.X - cx, cy - Cursor.Position.Y);
-        //         Cursor.Position = new System.Drawing.Point(cx, cy);
-        //     }
-        // }
-
-        // protected override void OnMouseCaptureChanged(EventArgs e)
-        // {
-        //     base.OnMouseCaptureChanged(e);
-
-        //     BeginInvoke((Action)(() =>
-        //         {
-        //             if (foreground && !Capture)
-        //                 Capture = true;
-        //         }));
-        // }
-
-        protected override void OnHandleCreated(EventArgs e)
+        protected override void OnMouseMove(MouseEventArgs e)
         {
-            base.OnHandleCreated(e);
+            int cx = Left + Width / 2;
+            int cy = Top + Height / 2;
 
-            game = new Game();
-            game.Initialize(this.glControl.OpenGL, a => BeginInvoke(a));
-            game.OnViewportChanged(new Viewport(0, 0, glControl.Width, glControl.Height));
-            game.Start();
+            if (Cursor.Position.X != cx || Cursor.Position.Y != cy)
+            {
+                game.OnMouseMove(Cursor.Position.X - cx, cy - Cursor.Position.Y);
+                Cursor.Position = new System.Drawing.Point(cx, cy);
+            }
         }
 
-
-        private void glControl_SizeChanged(object sender, EventArgs e)
+        protected override void OnMouseCaptureChanged(EventArgs e)
         {
-            if (game == null) return;
-            game.OnViewportChanged(new Viewport(0, 0, glControl.Width, glControl.Height));
+            base.OnMouseCaptureChanged(e);
+
+            BeginInvoke((Action)(() =>
+                {
+                    if (foreground && !Capture)
+                        Capture = true;
+                }));
         }
 
         private bool foreground;

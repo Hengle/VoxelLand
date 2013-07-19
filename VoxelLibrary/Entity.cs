@@ -9,19 +9,23 @@ namespace VoxelLand
     {
         public Entity(Entity parent=null, CoordinateSystem coordinateSystem=null, string name="")
         {
-            this.id = NextID++;
-            this.Parent = parent;
-            this.coordinateSystem = coordinateSystem ?? CoordinateSystem.Default;
-            this.Name = name.Length > 0 ? name : String.Format("Entity #{0}", id);
+            ID = NextID++;
+            Parent = parent;
+            CoordinateSystem = coordinateSystem ?? CoordinateSystem.Default;
+            Name = name.Length > 0 ? name : String.Format("Entity #{0}", ID);
         }
+
+        public long ID { get; private set; }
 
         public string Name { get; set; }
 
         public Entity Parent { get; private set; }
 
+        public CoordinateSystem CoordinateSystem { get; private set; }
+
         public void ResetLocation()
         {
-            coordinateSystem = CoordinateSystem.Default;
+            CoordinateSystem = CoordinateSystem.Default;
         }
 
         public Matrix ModelViewMatrix
@@ -29,39 +33,36 @@ namespace VoxelLand
             get
             {
                 if (Parent == null)
-                    return coordinateSystem.ModelViewMatrix;
+                    return CoordinateSystem.ModelViewMatrix;
                 else
-                    return coordinateSystem.ModelViewMatrix * Parent.ModelViewMatrix;
+                    return CoordinateSystem.ModelViewMatrix * Parent.ModelViewMatrix;
             }
         }
 
         public void LocalTranslate(Vector v)
         {
-            coordinateSystem = coordinateSystem.LocallyTranslated(v);
+            CoordinateSystem = CoordinateSystem.LocallyTranslated(v);
         }
 
         public void GlobalTranslate(Vector v)
         {
-            coordinateSystem = coordinateSystem.GloballyTranslated(v);
+            CoordinateSystem = CoordinateSystem.GloballyTranslated(v);
         }
 
         public void LocalRotate(float angle, Vector axis)
         {
-            coordinateSystem = coordinateSystem.LocallyRotated(angle, axis);
+            CoordinateSystem = CoordinateSystem.LocallyRotated(angle, axis);
         }
 
         public void GlobalRotate(float angle, Vector axis)
         {
-            coordinateSystem = coordinateSystem.GloballyRotated(angle, axis);
+            CoordinateSystem = CoordinateSystem.GloballyRotated(angle, axis);
         }
 
         public override string ToString()
         {
             return String.Format("#<Entity {0}>", Name);
         }
-
-        protected CoordinateSystem coordinateSystem;
-        protected long id;
 
         private static long NextID;
     }

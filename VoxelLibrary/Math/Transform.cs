@@ -7,42 +7,36 @@ namespace VoxelLand
 {
     public static class Transform
     {
-        public static Matrix Scale(float sx, float sy, float sz)
+        public static Matrix Scale(Vector s)
         {
             return new Matrix(new float[]
             {
-                sx, 0,  0,  0,
-                0,  sy, 0,  0,
-                0,  0,  sz, 0,
-                0,  0,  0,  1
+                s.X, 0,   0,   0,
+                0,   s.Y, 0,   0,
+                0,   0,   s.Z, 0,
+                0,   0,   0,   1
             });
         }
 
-        public static Matrix Scale(Vector v)
-        {
-            return Scale(v.X, v.Y, v.Z);
-        }
-
-        public static Matrix Translate(float dx, float dy, float dz)
+        public static Matrix Translate(Vector t)
         {
             return new Matrix(new float[]
             {
-                1,  0,  0,  0,
-                0,  1,  0,  0,
-                0,  0,  1,  0,
-                dx, dy, dz, 1
+                1,   0,   0,   0,
+                0,   1,   0,   0,
+                0,   0,   1,   0,
+                t.X, t.Y, t.Z, 1
             });
         }
 
-        public static Matrix Translate(Vector v)
-        {
-            return Translate(v.X, v.Y, v.Z);
-        }
-
-        public static Matrix Rotate(float angle, float x, float y, float z)
+        public static Matrix Rotate(float angle, Vector axis)
         {
             float c = (float)Math.Cos(angle);
             float s = (float)Math.Sin(angle);
+
+            float x = axis.X;
+            float y = axis.Y;
+            float z = axis.Z;
 
             return new Matrix(new float[]
             {
@@ -53,9 +47,36 @@ namespace VoxelLand
             });
         }
 
-        public static Matrix Rotate(float angle, Vector axis)
+        public static Quaternion RotateQ(float angle, Vector axis)
         {
-            return Rotate(angle, axis.X, axis.Y, axis.Z);
+            axis = axis.Normalized();
+            angle /= 2.0f;
+
+        	float s = (float)Math.Sin(angle);
+        	float c = (float)Math.Cos(angle);
+         
+            return new Quaternion(axis.X * s, axis.Y * s, axis.Z * s, c);
+        }
+
+        public static Quaternion Rotate(float pitch, float yaw, float roll)
+        {
+            float p = pitch / 2.0f;
+            float y = yaw   / 2.0f;
+            float r = roll  / 2.0f;
+ 
+        	float sinp = (float)Math.Sin(p);
+        	float siny = (float)Math.Sin(y);
+        	float sinr = (float)Math.Sin(r);
+        	float cosp = (float)Math.Cos(p);
+        	float cosy = (float)Math.Cos(y);
+        	float cosr = (float)Math.Cos(r);
+ 
+            return new Quaternion(
+                sinr * cosp * cosy - cosr * sinp * siny,
+            	cosr * sinp * cosy + sinr * cosp * siny,
+            	cosr * cosp * siny - sinr * sinp * cosy,
+            	cosr * cosp * cosy + sinr * sinp * siny
+                );
         }
         
         public static Matrix Frustum(float left, float right, float bottom, float top, float near, float far)

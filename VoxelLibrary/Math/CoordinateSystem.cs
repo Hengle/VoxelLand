@@ -56,6 +56,11 @@ namespace VoxelLand
             return (rotation * p) + translation;
         }
 
+        public CoordinateSystem ToGlobal(CoordinateSystem c)
+        {
+            return null;
+        }
+
         public Vector ToLocal(Vector v)
         {
             return rotation.Transposed() * v;
@@ -68,7 +73,7 @@ namespace VoxelLand
 
         public CoordinateSystem LocallyTranslated(Vector v)
         {
-            return new CoordinateSystem(rotation, translation + (rotation * v));
+            return new CoordinateSystem(rotation, translation + ToGlobal(v));
         }
 
         public CoordinateSystem GloballyTranslated(Vector v)
@@ -83,7 +88,7 @@ namespace VoxelLand
 
         public CoordinateSystem GloballyRotated(float angle, Vector axis)
         {
-            return new CoordinateSystem(Transform.Rotate(angle, rotation.Transposed() * axis) * rotation, Transform.Rotate(angle, axis) * translation);
+            return new CoordinateSystem(Transform.Rotate(angle, ToLocal(axis)) * rotation, Transform.Rotate(angle, axis) * translation);
         }
 
         public override string ToString()

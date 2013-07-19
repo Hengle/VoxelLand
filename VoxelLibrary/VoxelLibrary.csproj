@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="Buffer.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Math\Quaternion.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MaterialManager.cs" />
     <Compile Include="Material.cs" />
