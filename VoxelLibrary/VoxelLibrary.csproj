@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -55,6 +56,8 @@
     <Compile Include="Camera.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Keyboard.cs" />
+    <Compile Include="Mouse.cs" />
     <Compile Include="Entity.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -81,6 +81,7 @@ namespace VoxelLand
         #endregion
 
         #region Transformations
+        // Rotate(angle, axis, point)
         public CoordinateSystem LocallyTranslated(Vector v)
         {
             return new CoordinateSystem(Rotation, Origin + (Rotation * v));

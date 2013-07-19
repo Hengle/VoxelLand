@@ -77,11 +77,19 @@ namespace VoxelLand
 
         protected override void OnKeyUp(KeyEventArgs e)
         {
+            game.OnKeyUp(e.KeyCode);
             base.OnKeyUp(e);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.Escape)
+            {
+                Application.Exit();
+                return;
+            }
+
+            game.OnKeyDown(e.KeyCode);
             base.OnKeyDown(e);
         }
 

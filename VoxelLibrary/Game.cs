@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace VoxelLand
 {
@@ -7,8 +9,9 @@ namespace VoxelLand
     {
         public Game()
         {
+            mouse = new Mouse();
+            keyboard = new Keyboard();
             running = new ManualResetEvent(false);
-            mouseAccum = Vector.Zero;
         }
 
         public void Initialize(IntPtr handle, Viewport viewport)
@@ -48,7 +51,17 @@ namespace VoxelLand
 
         public void OnMouseMove(float dx, float dy)
         {
-            mouseAccum += new Vector(dx, dy, 0);
+            mouse.OnMouseMove(dx, dy);
+        }
+
+        public void OnKeyUp(Keys key)
+        {
+            keyboard.OnKeyUp(key);
+        }
+
+        public void OnKeyDown(Keys key)
+        {
+            keyboard.OnKeyDown(key);
         }
 
         public void OnViewportChanged(Viewport viewport)
@@ -69,13 +82,22 @@ namespace VoxelLand
 
         private void ProcessInput()
         {
-            if (mouseAccum.Y != 0.0f)
-                camera.LocalRotate(-mouseAccum.Y / 200.0f, Vector.UnitX);
+            bool updated = false;
 
-            if (mouseAccum.X != 0.0f)
-                camera.LocalRotate(mouseAccum.X / 200.0f, camera.CoordinateSystem.ToLocal(Vector.UnitY));
+            Vector d = mouse.Read();
+            if (d.Y != 0.0f) { updated = true; camera.LocalRotate(-d.Y / 200.0f, Vector.UnitX); }
+            if (d.X != 0.0f) { updated = true; camera.LocalRotate( d.X / 200.0f, camera.CoordinateSystem.ToLocal(Vector.UnitY)); }
 
-            mouseAccum.X = mouseAccum.Y = 0;
+            TimeSpan t;
+            t = keyboard.Read(Keys.W);     if (t.TotalSeconds > 0.0f) { updated = true; camera.LocalTranslate(Vector.UnitZ * (float)t.TotalSeconds * -3.0f); }
+            t = keyboard.Read(Keys.S);     if (t.TotalSeconds > 0.0f) { updated = true; camera.LocalTranslate(Vector.UnitZ * (float)t.TotalSeconds *  3.0f); }
+            t = keyboard.Read(Keys.A);     if (t.TotalSeconds > 0.0f) { updated = true; camera.LocalTranslate(Vector.UnitX * (float)t.TotalSeconds * -3.0f); }
+            t = keyboard.Read(Keys.D);     if (t.TotalSeconds > 0.0f) { updated = true; camera.LocalTranslate(Vector.UnitX * (float)t.TotalSeconds *  3.0f); }
+            t = keyboard.Read(Keys.Space); if (t.TotalSeconds > 0.0f) { updated = true; camera.GlobalTranslate(Vector.UnitY * (float)t.TotalSeconds *  3.0f); }
+            t = keyboard.Read(Keys.Z);     if (t.TotalSeconds > 0.0f) { updated = true; camera.GlobalTranslate(Vector.UnitY * (float)t.TotalSeconds * -3.0f); }
+
+            if (updated)
+                Debug.WriteLine("Camera: {0}", camera.CoordinateSystem);
         }
 
         private void Paint()
@@ -83,11 +105,13 @@ namespace VoxelLand
             renderer.Render(viewport, camera);
         }
 
-        private Vector mouseAccum;
         private Thread mainLoopThread;
-        private Renderer renderer;
+        private ManualResetEvent running;
+
+        private Mouse mouse;
+        private Keyboard keyboard;
         private Camera camera;
         private Viewport viewport;
-        private ManualResetEvent running;
+        private Renderer renderer;
     }
 }
