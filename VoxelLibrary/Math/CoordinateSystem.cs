@@ -33,18 +33,18 @@ namespace VoxelLand
 
         public override string ToString()
         {
-            return String.Format("{0} + {1}", Rotation, Origin);
+            return String.Format("{0} + {1}", Rotation.ToAngleAxis(), Origin);
         }
 
         #region Matrix Conversions
         public Matrix ModelMatrix
         {
-            get { return Transform.Translate(Origin - Point.Origin) * Rotation; }
+            get { return Rotation.Conjugate() * Transform.Translate(Origin - Point.Origin); }
         }
 
         public Matrix ViewMatrix
         {
-            get { return Rotation.Conjugate() * Transform.Translate(Point.Origin - Origin); }
+            get { return Rotation * Transform.Translate(Point.Origin - Origin); }
         }
         #endregion
 

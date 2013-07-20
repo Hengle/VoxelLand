@@ -23,9 +23,6 @@ namespace VoxelLand
 
             camera = new PerspectiveCamera();
             camera.LocalTranslate(new Vector(0, 0, 3));
-
-            // camera = new OrthographicCamera(2);
-            // camera.LocalTranslate(new Vector(0, 0, -1));
         }
 
         public void Start()
@@ -82,22 +79,20 @@ namespace VoxelLand
 
         private void ProcessInput()
         {
-            bool updated = false;
+            Vector forward = camera.CoordinateSystem.ToGlobal(Vector.UnitZ);
+            forward = new Vector(-forward.X, 0.0f, -forward.Z);
 
             Vector d = mouse.Read();
-            if (d.Y != 0.0f) { updated = true; camera.LocalRotate(-d.Y / 200.0f, Vector.UnitX); }
-            if (d.X != 0.0f) { updated = true; camera.LocalRotate( d.X / 200.0f, camera.CoordinateSystem.ToLocal(Vector.UnitY)); }
+            if (d.Y != 0.0f) camera.LocalRotate( d.Y / 200.0f, Vector.UnitX);
+            if (d.X != 0.0f) camera.LocalRotate(-d.X / 200.0f, camera.CoordinateSystem.ToLocal(Vector.UnitY));
 
             TimeSpan t;
-            t = keyboard.Read(Keys.W);     if (t.TotalSeconds > 0.0f) { updated = true; camera.LocalTranslate(Vector.UnitZ * (float)t.TotalSeconds * -3.0f); }
-            t = keyboard.Read(Keys.S);     if (t.TotalSeconds > 0.0f) { updated = true; camera.LocalTranslate(Vector.UnitZ * (float)t.TotalSeconds *  3.0f); }
-            t = keyboard.Read(Keys.A);     if (t.TotalSeconds > 0.0f) { updated = true; camera.LocalTranslate(Vector.UnitX * (float)t.TotalSeconds * -3.0f); }
-            t = keyboard.Read(Keys.D);     if (t.TotalSeconds > 0.0f) { updated = true; camera.LocalTranslate(Vector.UnitX * (float)t.TotalSeconds *  3.0f); }
-            t = keyboard.Read(Keys.Space); if (t.TotalSeconds > 0.0f) { updated = true; camera.GlobalTranslate(Vector.UnitY * (float)t.TotalSeconds *  3.0f); }
-            t = keyboard.Read(Keys.Z);     if (t.TotalSeconds > 0.0f) { updated = true; camera.GlobalTranslate(Vector.UnitY * (float)t.TotalSeconds * -3.0f); }
-
-            if (updated)
-                Debug.WriteLine("Camera: {0}", camera.CoordinateSystem);
+            t = keyboard.Read(Keys.W);     if (t.TotalSeconds > 0.0f) camera.GlobalTranslate(forward * (float)t.TotalSeconds *  3.0f);
+            t = keyboard.Read(Keys.S);     if (t.TotalSeconds > 0.0f) camera.GlobalTranslate(forward * (float)t.TotalSeconds * -3.0f);
+            t = keyboard.Read(Keys.D);     if (t.TotalSeconds > 0.0f) camera.LocalTranslate(Vector.UnitX * (float)t.TotalSeconds *  3.0f);
+            t = keyboard.Read(Keys.A);     if (t.TotalSeconds > 0.0f) camera.LocalTranslate(Vector.UnitX * (float)t.TotalSeconds * -3.0f);
+            t = keyboard.Read(Keys.Space); if (t.TotalSeconds > 0.0f) camera.GlobalTranslate(Vector.UnitY * (float)t.TotalSeconds *  3.0f);
+            t = keyboard.Read(Keys.Z);     if (t.TotalSeconds > 0.0f) camera.GlobalTranslate(Vector.UnitY * (float)t.TotalSeconds * -3.0f);
         }
 
         private void Paint()

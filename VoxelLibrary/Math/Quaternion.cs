@@ -77,6 +77,11 @@ namespace VoxelLand
             return new Quaternion(-X, -Y, -Z, W);
         }
 
+        public Tuple<float, Vector> ToAngleAxis()
+        {
+            return Tuple.Create((float)Math.Acos(W) * 2.0f, new Vector(X, Y, Z).Normalized());
+        }
+
         public static Quaternion operator*(Quaternion q, Quaternion r)
         {
             return new Quaternion(

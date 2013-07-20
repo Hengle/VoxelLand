@@ -56,8 +56,8 @@
     <Compile Include="Camera.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Keyboard.cs" />
-    <Compile Include="Mouse.cs" />
+    <Compile Include="Input\Keyboard.cs" />
+    <Compile Include="Input\Mouse.cs" />
     <Compile Include="Entity.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -89,7 +89,7 @@
     <Compile Include="ShaderManager.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Viewport.cs">
+    <Compile Include="Math\Viewport.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
