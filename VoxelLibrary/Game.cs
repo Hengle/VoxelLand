@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
+using SharpGL;
 
 namespace VoxelLand
 {
@@ -18,13 +19,44 @@ namespace VoxelLand
         {
             this.viewport = viewport;
 
+            gl = new OpenGL();
+            gl.Create(RenderContextType.NativeWindow, viewport.Width, viewport.Height, 32, handle);
+            gl.MakeCurrent();
+
+            ShaderManager.Initialize(gl);
+            MaterialManager.Initialize(gl);
+
             renderer = new Renderer();
-            renderer.Initialize(handle, viewport);
+            renderer.Initialize(gl);
 
             camera = new PerspectiveCamera();
             camera.LocalTranslate(new Vector(0, 0, 3));
+
+            var mesh = new Mesh(gl, MeshType.Points);
+            mesh.AddBuffer(
+                new Buffer<Point>(gl,
+                    new Point(-2, -2, 0),
+                    new Point(-1, -1, 0),
+                    new Point( 0,  0, 0),
+                    new Point( 1, -1, 0),
+                    new Point( 2, -2, 0)));
+
+            scene = new Scene();
+            scene.Add(camera);
+
+            for (int j = -10; j < 10; j++)
+            for (int i = -10; i < 10; i++)
+            {
+                var e = new PhysicalEntity(mesh, MaterialManager.GetMaterial("Voxels"));
+                e.GlobalTranslate(Vector.UnitZ * -5 * i);
+                e.GlobalTranslate(Vector.UnitX * -5 * j);
+                scene.Add(e);
+            }
+
+            gl.MakeNothingCurrent();
         }
 
+        #region Pause/Resume
         public void Start()
         {
             running.Set();
@@ -45,7 +77,9 @@ namespace VoxelLand
         {
             running.Set();
         }
+        #endregion
 
+        #region External Events
         public void OnMouseMove(float dx, float dy)
         {
             mouse.OnMouseMove(dx, dy);
@@ -65,6 +99,7 @@ namespace VoxelLand
         {
             this.viewport = viewport;
         }
+        #endregion
 
         private void MainLoop()
         {
@@ -97,16 +132,19 @@ namespace VoxelLand
 
         private void Paint()
         {
-            renderer.Render(viewport, camera);
+            gl.MakeCurrent();
+            renderer.Render(viewport, camera, scene);
         }
 
         private Thread mainLoopThread;
         private ManualResetEvent running;
+        private OpenGL gl;
 
         private Mouse mouse;
         private Keyboard keyboard;
         private Camera camera;
         private Viewport viewport;
         private Renderer renderer;
+        private Scene scene;
     }
 }

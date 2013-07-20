@@ -14,9 +14,6 @@ namespace VoxelLand
 
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.UserPaint, true);
-
-            // FormBorderStyle = FormBorderStyle.None;
-            // WindowState = FormWindowState.Maximized;
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -86,6 +83,13 @@ namespace VoxelLand
             if (e.KeyCode == Keys.Escape)
             {
                 Application.Exit();
+                return;
+            }
+
+            if (e.KeyData == (Keys.Enter | Keys.Alt))
+            {
+                FormBorderStyle = (FormBorderStyle == FormBorderStyle.None) ? FormBorderStyle.Fixed3D : FormBorderStyle.None;
+                WindowState = (WindowState == FormWindowState.Normal) ? FormWindowState.Maximized : FormWindowState.Normal;
                 return;
             }
 

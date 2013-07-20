@@ -17,14 +17,9 @@ namespace VoxelLand
         {
         }
 
-        public void Initialize(IntPtr handle, Viewport viewport)
+        public void Initialize(OpenGL gl)
         {
-            gl = new OpenGL();
-            gl.Create(RenderContextType.NativeWindow, viewport.Width, viewport.Height, 32, handle);
-            gl.MakeCurrent();
-
-            ShaderManager.Initialize(gl);
-            MaterialManager.Initialize(gl);
+            this.gl = gl;
 
             gl.Enable(OpenGL.GL_DEPTH_TEST);
             gl.DepthFunc(DepthFunction.LessThanOrEqual);
@@ -33,9 +28,9 @@ namespace VoxelLand
             gl.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
             gl.Hint(HintTarget.PerspectiveCorrection, HintMode.Nicest);
-            gl.Hint(HintTarget.LineSmooth, HintMode.Nicest);
-            gl.Hint(HintTarget.PointSmooth, HintMode.Nicest);
-            gl.Hint(HintTarget.PolygonSmooth, HintMode.Nicest);
+            gl.Hint(HintTarget.LineSmooth,            HintMode.Nicest);
+            gl.Hint(HintTarget.PointSmooth,           HintMode.Nicest);
+            gl.Hint(HintTarget.PolygonSmooth,         HintMode.Nicest);
 
             gl.Enable(OpenGL.GL_SMOOTH);
             gl.Enable(OpenGL.GL_LINE_SMOOTH);
@@ -43,43 +38,30 @@ namespace VoxelLand
             gl.Enable(OpenGL.GL_MULTISAMPLE);
 
             gl.MinSampleShading(4.0f);
-
-            material = MaterialManager.GetMaterial("Voxels");
-
-            mesh = new Mesh(gl);
-            mesh.AddBuffer(
-                new Buffer<Point>(gl,
-                    new Point(-2, -2, 0),
-                    new Point(-1, -1, 0),
-                    new Point( 0,  0, 0),
-                    new Point( 1,  1, 0),
-                    new Point( 2,  2, 0)));
-
-            gl.MakeNothingCurrent();
         }
 
-        public void Render(Viewport viewport, Camera camera)
+        public void Render(Viewport viewport, Camera camera, Scene scene)
         {
-            gl.MakeCurrent();
-
             gl.Viewport(viewport.Left, viewport.Top, viewport.Width, viewport.Height);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
-            gl.BindVertexArray(mesh.ID);
+            foreach (var entities in scene.OfType<PhysicalEntity>().GroupBy(e => e.Material))
+            {
+                gl.UseProgram(entities.Key.ID);
+                entities.Key.SetUniform("projectionMatrix", camera.GetProjectionMatrix(viewport));
 
-            gl.UseProgram(material.ID);
-            
-            material.SetUniform("modelViewMatrix", camera.CoordinateSystem.ViewMatrix);
-            material.SetUniform("projectionMatrix", camera.GetProjectionMatrix(viewport));
-
-            gl.DrawArrays(OpenGL.GL_POINTS, 0, 5);
+                foreach (var entity in entities)
+                {
+                    gl.BindVertexArray(entity.Mesh.ID);
+                    entity.Material.SetUniform("modelViewMatrix", camera.CoordinateSystem.ViewMatrix * entity.CoordinateSystem.ModelMatrix);
+                    gl.DrawArrays((uint)entity.Mesh.Type, 0, entity.Mesh.Length);
+                }
+            }
 
             gl.Flush();
             gl.Blit(IntPtr.Zero);
         }
 
         private OpenGL gl;
-        private Material material;
-        private Mesh mesh;
     }
 }
